@@ -3,8 +3,6 @@ import * as R from 'ramda'
 
 const initState = {}
 
-// todo: allow user to customize name of reducer in redux store
-
 export const fakeDBReducer = (state = initState, action) => {
     const payload = action.payload
     switch (action.type) {
@@ -55,8 +53,6 @@ export const fakeDBReducer = (state = initState, action) => {
             // if schema exists can add backref objects from list
             return handle_backref({schema, modelName, state, data, nextId})
         }
-        //todo: docs: does not do delete cascades for related objects, or check constrains
-        // todo: docs: all actions needs schema passed in if doing validation
         case 'DELETE_MODEL': {
             const {modelName, id} = {...payload}
             if (!(checkValidation(state, action))) {

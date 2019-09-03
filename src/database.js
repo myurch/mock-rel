@@ -3,9 +3,6 @@ import * as Actions from "./mockRedux/actions"
 import * as R from "ramda"
 import {handle_add_all_models, handle_backref, checkSchemaIntegrity} from "./utils"
 
-// todo: docs: need to have 'id' variable. must have that name. cannot change the name, format must be can be int
-// todo: add warning when try to add a list where it should not? or take care of it in another model?
-
 const _selDB = state => R.propOr({}, 'fakeDBReducer', state)
 const _selMod = (state, modelName, id) => R.pathOr({}, ['fakeDBReducer', modelName, id], state)
 const _selAllMod = (state, modelName) => R.pathOr({}, ['fakeDBReducer', modelName], state)
