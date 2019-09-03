@@ -1,7 +1,7 @@
 {
   "name": "mock-rel",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Create/update nested relational objects in a temp frontend database using redux",
   "main": "src/index.js",
   "scripts": {
     "lib": "./node_modules/.bin/babel src --out-dir lib"
