@@ -2,20 +2,20 @@
   "name": "mock-rel",
   "version": "0.1.0",
   "description": "Create/update nested relational objects in a temp frontend database using redux",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "lib": "./node_modules/.bin/babel src --out-dir lib"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/blue-banana/mock-rel.git"
+    "url": "https://github.com/myurch/mock-rel.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/blue-banana/mock-rel/issues"
+    "url": "https://github.com/myurch/mock-rel.git"
   },
-  "homepage": "https://gitlab.com/blue-banana/mock-rel#readme",
+  "homepage": "https://github.com/myurch/mock-rel.git",
   "dependencies": {
     "ramda": "^0.26.1",
     "rc-switch": "^1.9.0",
