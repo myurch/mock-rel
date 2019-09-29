@@ -1,7 +1,15 @@
 # mock-rel Documentation
 
-Useful for startup project which focuses on frontend, giving it basic CRUD functionality without needing backend.
+Creates a Fake Database in your redux store; exposes functions to create/edit/delete/resolve rows and tables.
 
+Gives you nested relational data, reducers/actions/resolvers to work with.
+
+Useful for demo project which does not have backend, but needs CRUD functionality.
+
+
+```bash
+npm install mock-rel
+```
 
 Purpose 1: Fake DB inside your redux
 
@@ -14,11 +22,8 @@ Exposes reducers, to merge with pre-existing redux setup in your project.
 
 Purpose 2: Static Relational Data Generator
 
-Generate objects with nested, relational data to use with your UI for your demo website.
+Generate static objects with nested, relational data to use with your UI for your demo website.
 
-```bash
-npm install mock-rel
-```
 
 ## Basic Setup
 
@@ -44,20 +49,26 @@ export const schema = {
         }
     }
 }
+// create object to represent your new database
 const Manager = new DataBase({ schema })
+
+// if you want to control how deeply nested your rel object will be resolved, add this parameter.
+// by default, 'default_query_lvl' is 5 
+const Manager = new DataBase({ schema, default_query_lvl: 3})
 ```
 
 The 'BACKREF' type lets the database know that this is a list of references from another model.
 
-The 'OBJECT' type lest the database know that this is one reference to another model.
+The 'OBJECT' type lets the database know that this is only one reference to another model.
 
-All other fields must be listed in the schema (including id). But their field types (string, int, ect) do not need to be explicitly defined.
+All other fields must be listed in the schema (including id). But their field types (string, int, ect) are not explicitly defined.
 
 Next, add the mock-rel reducers to your already existing redux setup. Your 'Manager' object exposes the necessary reducers:
 
 ```javascript
+// exposed reducers
 const fakeDBReducers = Manager.reducers
-// add this wherever you setup your reducers
+// add this wherever you setup your reducers. example:
 const createRootReducer = history => combineReducers({
     router: connectRouter(history),
     ...reducers,
@@ -68,15 +79,15 @@ const createRootReducer = history => combineReducers({
 Finally, your 'Manager' object exposes actions which will create/edit/delete data in your fake redux 'database':
 
 ```javascript
-// set up your actions to work with redux
+// set up your actions to work with your redux setup
 const reduxDispatchFunctions = (dispatch) => ({
     addModel: bindActionCreators(Manager.actions.addModel, dispatch),
     editModel: bindActionCreators(Manager.actions.editModel, dispatch),
     deleteModel: bindActionCreators(Manager.actions.deleteModel, dispatch),
 })
 
-// ready to use in your component
-const onClick = () => {
+// ready to use in your component's submit button
+const onSubmit = () => {
     return addModel({ modelName: 'Book', data: { name: 'boo', author: 2 }, schema })
 }
 ```
@@ -94,17 +105,21 @@ schema : object -> your schema object (immutable)
 
 data: object -> { <fieldName> : <data> }
 
-   ...where the fieldName cannot be the 'id', because that is automatically taken care of
+   ...where the fieldName is the string, as matches the schema
    
-   ...if the data type is 'OBJECT', the corresponding data type must contain the reference object id:
+   ...fieldName cannot be the 'id', because that is automatically taken care of when creating object (addModel())
    
-   for example, the data creating a book:
+   ...if the data type is 'OBJECT', the corresponding data must contain the reference object id:
+   
+   for example, the data creating a book, adding an author id:
    
    {'author': 4, 'name': 'foo'}
    
-   another example, creating an author:
+   another example, creating an author, adding a collection of book id's:
    
    {'books': [ 1, 2, 3 ], 'name': 'bar'}
+   
+   the added object's id must correspond to an existing entry in the fake database
    
 
 addAllModels()
@@ -113,9 +128,10 @@ modelName : see above
 
 schema : see above
 
-id_automatic : boolean (default: true) -> if true, mock-rel will handle adding id's to the data. otherwise you must add your own id.
+id_automatic : boolean (default: true) -> if true, mock-rel will handle adding id's to the data and ignore your id data. otherwise you must add your own id.
 
 data_list: list of objects -> see above for explanation of 'data' object in list
+
 
 editModel()
 
@@ -125,9 +141,9 @@ schema : see above
 
 id: integer: id of object being edited
 
-data : see above -> only contains fields being edited for example, to edit a book field of the author model the edit payload would be:
+data : see above -> only contains fields being edited. for example, to edit a book field of the author model the edit payload would be:
 
-   { modelName: 'Author', id: 1, data: { 'book': 4 }, schema  }
+   { modelName: 'Author', id: 1, data: { 'book': 4 }, schema: mySchema  }
 
 
 deleteModel()
@@ -158,40 +174,44 @@ export const author_attr = [
 
 When you need your data for a component, use the Manager object to access the selectors.
 
+These selectors are used to get the data from your redux store and resolve the relationships into nested objects.
+
 This will return an object with nested relationship fields, ready to use for you UI.
 
 ```javascript
 // wherever you have access to your redux state, you have access to your fake database:
 
-// get all instances of one model
+// get all instances of the Book model
 const allBookData = Manager.resolveAllModels(state, 'Book')
-// get one instance of one model
+// get one Book with id = 3
 const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
 ```
 
-Sometimes, you want to resolve your data by adding custom logic to fields.
+Sometimes, you want to resolve your data by adding custom logic to fields. This step is done during the resolveModel() step.
 
 First, create your resolver class:
 
 ```javascript
-// notice that every field must be added to the object, including the id
+// notice that every field must be added to the object, including the id. the constructor will override how the ENTIRE object is resolved
 export class Book {
     constructor({id, name, author}) {
         this.id = id
         this.name = name + 'fooooobar' // do crazy custom logic here...
         
-        // 'author' is the actual Author object, not just the id
+        // 'author' is the actual Author object, not just the id that's in the redux store
+        // if a 'BACKREF' field exists, it will be passed into the constructor as a list of resolved objects
         if (author) {this.author = author}
     }
 }
 
-// also, add this model to your schema under the 'model' key:
+// now you need to add this 'Book' class to your schema under the 'model' key:
 
 const schema = {
     'Book': {
         'fields' : {
+            // ... stuff goes here...
         },
-        'model': Book,
+        'model': Book, // custom resolvers here...
     }
 }
 
