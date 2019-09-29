@@ -96,21 +96,21 @@ const onSubmit = () => {
 Note, the actions must have a specific payload:
 
 
-addModel() 
+### addModel() 
 
-modelName : string -> must match schema key value for your model
+| prop name     | type          | info                                       |
+| ------------- | ------------- | ------------------------------------------ |
+| modelName     | string        | must match schema key value for your model |
+| schema        | object        | your schema object (immutable)             |
+| data          | object        | { fieldName : data }; see below more info  |
 
-schema : object -> your schema object (immutable)
+#### Notes for the 'data' prop:
 
-data: object -> { <fieldName> : <data> }
-
-   ...where the fieldName is the string, as matches the schema
+   the fieldName is the string, as matches the schema
    
-   ...fieldName cannot be the 'id', because that is automatically taken care of when creating object (addModel())
+   fieldName cannot be the 'id', because that is automatically taken care of when creating object (addModel())
    
-   ...if the data type is 'OBJECT', the corresponding data must contain the reference object id:
-   
-   for example, the data creating a book, adding an author id:
+   If the data type is 'OBJECT', the corresponding data must contain the reference object id. For example, the data creating a book, adding an author id:
    
    {'author': 4, 'name': 'foo'}
    
@@ -121,42 +121,52 @@ data: object -> { <fieldName> : <data> }
    the added object's id must correspond to an existing entry in the fake database
    
 
-addAllModels()
+### addAllModels()
 
-modelName : see above
+| prop name     | type                 | info                                                |
+| ------------- | -------------------- | --------------------------------------------------- |
+| modelName     | see above            | see above                                           |
+| schema        | see above            | see above                                           |
+| id_automatic  | boolean              | default: true; see below more info                  |
+| data_list     | list of data objects | see above for explanation of 'data' object in list  |
 
-schema : see above
 
-id_automatic : boolean (default: true) -> if true, mock-rel will handle adding id's to the data and ignore your id data. otherwise you must add your own id.
+#### Notes for the 'id_automatic' prop:
 
-data_list: list of objects -> see above for explanation of 'data' object in list
+ if true, mock-rel will handle adding id's to the data and ignore your id data. otherwise you must add your own id.
 
 
-editModel()
+### editModel()
 
-modelName : see above
+| prop name     | type          | info                                       |
+| ------------- | ------------- | --------------------------- |
+| modelName     | see above     | see above                   |
+| id            | integer       | id of object being edited   |
+| schema        | see above     | see above                   |
+| data          | object        | see above & below more info |
 
-schema : see above
+#### Notes for the 'data' prop:
 
-id: integer: id of object being edited
-
-data : see above -> only contains fields being edited. for example, to edit a book field of the author model the edit payload would be:
+only contains fields being edited. for example, to edit a book field of the author model the edit payload would be:
 
    { modelName: 'Author', id: 1, data: { 'book': 4 }, schema: mySchema  }
 
 
-deleteModel()
+### deleteModel()
 
-modelName: see above
+| prop name     | type          | info                                       |
+| ------------- | ------------- | ------------- |
+| modelName     | see above     | see above     |
+| id            | see above     | see above     |
 
-id: see above
 
 ## Example Data:
 
 Important: when adding a relationship field USING AN ACTION (for example: { author: 3 }), that relationship model (author w/ id of 3) MUST already exist in the database.
 
 ```javascript
-// must set id_automatic = false in order to register id props below; otherwise mock-rel assigns its own 'id'
+// must set id_automatic = false in the action's payload in order to register id props below;
+// otherwise mock-rel assigns its own 'id' starting at 0
 export const book_attr = [
     {name: 'book_4', author : 0, id: 4},
     {name: 'book_5', id: 5},
@@ -186,12 +196,11 @@ const allBookData = Manager.resolveAllModels(state, 'Book')
 const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
 ```
 
-Sometimes, you want to resolve your data by adding custom logic to fields. This step is done during the resolveModel() step.
-
-First, create your resolver class:
+### Custom logic/ resolvers for fields.
 
 ```javascript
-// notice that every field must be added to the object, including the id. the constructor will override how the ENTIRE object is resolved
+// notice that every field must be added to the object, including the id.
+// the constructor will override how the ENTIRE object is resolved
 export class Book {
     constructor({id, name, author}) {
         this.id = id
