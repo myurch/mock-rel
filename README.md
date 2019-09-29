@@ -11,7 +11,7 @@ Useful for demo project which does not have backend, but needs CRUD functionalit
 npm install mock-rel
 ```
 
-Purpose 1: Fake DB inside your redux
+#### Purpose 1: Fake DB inside your redux
 
 Make fake database (with relational data) inside your redux store. 
 
@@ -20,7 +20,7 @@ Exposes actions to create/update/delete entries.
 Exposes reducers, to merge with pre-existing redux setup in your project.
 
 
-Purpose 2: Static Relational Data Generator
+#### Purpose 2: Static Relational Data Generator (No Redux)
 
 Generate static objects with nested, relational data to use with your UI for your demo website.
 
@@ -49,12 +49,6 @@ export const schema = {
         }
     }
 }
-// create object to represent your new database
-const Manager = new DataBase({ schema })
-
-// if you want to control how deeply nested your rel object will be resolved, add this parameter.
-// by default, 'default_query_lvl' is 5 
-const Manager = new DataBase({ schema, default_query_lvl: 3})
 ```
 
 The 'BACKREF' type lets the database know that this is a list of references from another model.
@@ -62,6 +56,17 @@ The 'BACKREF' type lets the database know that this is a list of references from
 The 'OBJECT' type lets the database know that this is only one reference to another model.
 
 All other fields must be listed in the schema (including id). But their field types (string, int, ect) are not explicitly defined.
+
+Next, create your 'Manager' object
+
+```javascript
+// create object to manage your schema, actions, & reducers
+const Manager = new DataBase({ schema })
+
+// if you want to control how deeply nested your rel object will be resolved, add this parameter.
+// by default, 'default_query_lvl' is 5 
+const Manager = new DataBase({ schema, default_query_lvl: 3})
+```
 
 Next, add the mock-rel reducers to your already existing redux setup. Your 'Manager' object exposes the necessary reducers:
 
@@ -74,6 +79,8 @@ const allReducers = combineReducers({
     ...fakeDBReducers
 })
 ```
+
+Note: MUST have name 'fakeDBReducers' for the selectors to work properly
 
 Finally, your 'Manager' object exposes actions which will create/edit/delete data in your fake redux 'database':
 
@@ -233,7 +240,7 @@ If you're not using redux and just want a way to resolve & manage static relatio
 
 // create static data
 export const book_attr = [
-    {name: 'book_4', id: 4},
+    {name: 'book_4', id: 4}, // set id_automatic = false to control the 'id' field
     {name: 'book_5', id: 5},
 ]
 export const author_attr = [
@@ -243,7 +250,7 @@ export const author_attr = [
 const Manager = new DataBase({ schema })
 // use the add_all_models() function to add data to your Manager object directly:
 Manager.add_all_models({modelName: 'Book', data_list: book_attr, id_automatic: false})
-// note: 'books' field oin 'author_attr' can only be filled out after all 'book_attr' have already been added
+// note: 'books' field in 'author_attr' can only be filled out after all 'book_attr' have already been added
 Manager.add_all_models({modelName: 'Author', data_list: author_attr})
 ```
 
