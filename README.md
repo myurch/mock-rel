@@ -81,6 +81,7 @@ Finally, your 'Manager' object exposes actions which will create/edit/delete dat
 // set up your actions to work with your redux setup
 const reduxDispatchFunctions = (dispatch) => ({
     addModel: bindActionCreators(Manager.actions.addModel, dispatch),
+    addAllModels: bindActionCreators(Manager.actions.addAllModels, dispatch),
     editModel: bindActionCreators(Manager.actions.editModel, dispatch),
     deleteModel: bindActionCreators(Manager.actions.deleteModel, dispatch),
 })
@@ -105,20 +106,18 @@ Note, the actions must have a specific payload:
 | data          | object        | { fieldName : data }; see below more info  |
 
 #### Notes for the 'data' prop:
-
-   the fieldName is the string, as matches the schema
    
-   fieldName cannot be the 'id', because that is automatically taken care of when creating object (addModel())
+   fieldName cannot be 'id', because that is automatically taken care of when creating object (id_automatic only works for adding groups of data)
    
-   If the data type is 'OBJECT', the corresponding data must contain the reference object id. For example, the data creating a book, adding an author id:
+   'OBJECT' field (author id added to Book model):
    
    {'author': 4, 'name': 'foo'}
    
-   another example, creating an author, adding a collection of book id's:
+   'BACKREF'  field (books id's added to Author model):
    
    {'books': [ 1, 2, 3 ], 'name': 'bar'}
    
-   the added object's id must correspond to an existing entry in the fake database
+   the added id's (under 'author' and 'books') must correspond to existing objects in the fake database
    
 
 ### addAllModels()
