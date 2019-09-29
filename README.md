@@ -170,6 +170,23 @@ only contains fields being edited. for example, to edit a book field of the auth
 | id            | see above     | see above     |
 
 
+## Resolving Models from the Database (Redux Setup)
+
+When you need your data for a component, use the Manager object to access the selectors.
+
+These selectors are used to get the data from your redux store and resolve the relationships into nested objects.
+
+This will return an object with nested relationship fields, ready to use for you UI.
+
+```javascript
+// wherever you have access to your redux state, you have access to your fake database:
+
+// get all instances of the Book model
+const allBookData = Manager.resolveAllModels(state, 'Book')
+// get one Book with id = 3
+const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
+```
+
 ## Example Data:
 
 Important: when adding a relationship field USING AN ACTION (for example: { author: 3 }), that relationship model (author w/ id of 3) MUST already exist in the database.
@@ -189,24 +206,7 @@ export const author_attr = [
 ]
 ```
 
-## Resolving Models from the Database (Redux Setup)
-
-When you need your data for a component, use the Manager object to access the selectors.
-
-These selectors are used to get the data from your redux store and resolve the relationships into nested objects.
-
-This will return an object with nested relationship fields, ready to use for you UI.
-
-```javascript
-// wherever you have access to your redux state, you have access to your fake database:
-
-// get all instances of the Book model
-const allBookData = Manager.resolveAllModels(state, 'Book')
-// get one Book with id = 3
-const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
-```
-
-### Custom logic/ resolvers for fields.
+## Custom logic/ resolvers for fields.
 
 It's not required to make classes for your models. Resolving models is handled for you. But if you need to add custom logic:
 
