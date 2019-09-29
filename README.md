@@ -69,9 +69,8 @@ Next, add the mock-rel reducers to your already existing redux setup. Your 'Mana
 // exposed reducers
 const fakeDBReducers = Manager.reducers
 // add this wherever you setup your reducers. example:
-const createRootReducer = history => combineReducers({
-    router: connectRouter(history),
-    ...reducers,
+const allReducers = combineReducers({
+    ...myOtherReducers,
     ...fakeDBReducers
 })
 ```
