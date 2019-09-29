@@ -224,3 +224,33 @@ const schema = {
 
 // ...now you're ready to save the world!
 ```
+
+## No Redux
+
+If you're not using redux and just want a way to resolve & manage static relational data:
+
+```javascript
+
+// create static data
+export const book_attr = [
+    {name: 'book_4', id: 4},
+    {name: 'book_5', id: 5},
+]
+export const author_attr = [
+    {name: 'author_0', books: [4,5]}
+]
+// create manager obj & schema the same way as before
+const Manager = new DataBase({ schema })
+// use the add_all_models() function to add data to your Manager object directly:
+Manager.add_all_models({modelName: 'Book', data_list: book_attr, id_automatic: false})
+// note: 'books' field oin 'author_attr' can only be filled out after all 'book_attr' have already been added
+Manager.add_all_models({modelName: 'Author', data_list: author_attr})
+```
+
+
+Your data is now stored in the 'Manager' object itself, instead of a redux state. To resolve it:
+
+```javascript
+const author_1 = Manager.get_instance({modelName: 'Author', id: 0})
+const author_2 = Manager.get_instance({modelName: 'Author', id: 1})
+```
