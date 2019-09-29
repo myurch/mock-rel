@@ -68,6 +68,8 @@ const Manager = new DataBase({ schema })
 const Manager = new DataBase({ schema, default_query_lvl: 3})
 ```
 
+## Redux Setup
+
 Next, add the mock-rel reducers to your already existing redux setup. Your 'Manager' object exposes the necessary reducers:
 
 ```javascript
@@ -99,7 +101,7 @@ const onSubmit = () => {
 }
 ```
 
-## Payloads for Actions
+## Payloads for Actions (Redux Setup)
 
 Note, the actions must have a specific payload:
 
@@ -140,6 +142,8 @@ Note, the actions must have a specific payload:
 #### Notes for the 'id_automatic' prop:
 
  if true, mock-rel will handle adding id's to the data and ignore your id data. otherwise you must add your own id.
+ 
+ id's start at integer 0
 
 
 ### editModel()
@@ -185,7 +189,7 @@ export const author_attr = [
 ]
 ```
 
-## Resolving Models from the Database
+## Resolving Models from the Database (Redux Setup)
 
 When you need your data for a component, use the Manager object to access the selectors.
 
@@ -204,6 +208,8 @@ const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
 
 ### Custom logic/ resolvers for fields.
 
+It's not required to make classes for your models. Resolving models is handled for you. But if you need to add custom logic:
+
 ```javascript
 // notice that every field must be added to the object, including the id.
 // the constructor will override how the ENTIRE object is resolved
@@ -214,7 +220,12 @@ export class Book {
         
         // 'author' is the actual Author object, not just the id that's in the redux store
         // if a 'BACKREF' field exists, it will be passed into the constructor as a list of resolved objects
-        if (author) {this.author = author}
+        this.author = author
+        // virtual fields constructed from existing fields:
+        if (author) {
+            this.Foo = author.name + 'Bar'
+        }
+        // if no author exists, 'author' is undefined
     }
 }
 
@@ -247,6 +258,7 @@ export const author_attr = [
     {name: 'author_0', books: [4,5]}
 ]
 // create manager obj & schema the same way as before
+// Custom resolvers still apply
 const Manager = new DataBase({ schema })
 // use the add_all_models() function to add data to your Manager object directly:
 Manager.add_all_models({modelName: 'Book', data_list: book_attr, id_automatic: false})
