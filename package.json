@@ -16,6 +16,11 @@
     "url": "https://github.com/myurch/mock-rel.git"
   },
   "homepage": "https://github.com/myurch/mock-rel.git",
+  "keywords": [
+    "redux",
+    "database",
+    "crud"
+    ],
   "dependencies": {
     "ramda": "^0.26.1",
     "rc-switch": "^1.9.0",
