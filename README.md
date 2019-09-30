@@ -189,6 +189,14 @@ const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
 
 ## Payload Reformat (Redux Setup)
 
+Sometimes, its inconvenient to change your action payload in the component itself: 
+
+```javascript
+// data not in correct format?
+// good news! you don't need to format your payload here!
+onSubmit = () => addModel(props)
+```
+
 Format your action's payload where its convenient. You can add helper functions to your schema to do so:
 
 ```javascript
