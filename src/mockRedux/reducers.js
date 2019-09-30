@@ -81,10 +81,7 @@ export const fakeDBReducer = (state = initState, action) => {
             return R.dissocPath([modelName, id], state)
         }
         case 'HYDRATE':
-            if(action && action.hydration) {
-                return action.hydration
-            }
-            return state
+            return R.propOr(state, 'hydration', payload)
         default:
             return state
     }

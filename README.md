@@ -93,6 +93,8 @@ const reduxDispatchFunctions = (dispatch) => ({
     addAllModels: bindActionCreators(Manager.actions.addAllModels, dispatch),
     editModel: bindActionCreators(Manager.actions.editModel, dispatch),
     deleteModel: bindActionCreators(Manager.actions.deleteModel, dispatch),
+    // see 'Initial State' section below
+    hydrate: bindActionCreators(Manager.actions.hydrate, dispatch)
 })
 
 // ready to use in your component's submit button
@@ -100,6 +102,16 @@ const onSubmit = () => {
     return addModel({ modelName: 'Book', data: { name: 'boo', author: 2 }, schema })
 }
 ```
+
+### Actions added
+
+mock-rel will add actions with the following types to your redux store:
+
+* "ADD_ALL_MODELS"
+* "ADD_MODEL"
+* "EDIT_MODEL"
+* "DELETE_MODEL"
+* "HYDRATE"
 
 ## Payloads for Actions (Redux Setup)
 
@@ -253,6 +265,28 @@ const schema = {
 }
 ```
 
+## Initial State (Redux Setup)
+
+If you want to add initial data to your fake database when the app starts, use the Manager's hydration action:
+
+```javascript
+// dispatch an action when the app initializes to add books to fake redux store
+// add id's to both the row entry and table keys
+store.dispatch({ type: 'HYDRATE', payload: { hydration:
+    {'Book': {
+        3: {name: 'book_3..', author : 0, id: 3},
+        4: {name: 'book_4', author : 0, id: 4}
+    },'Author': {
+        0: {name: 'author_0', id: 0}
+    }}
+}})
+// or use the hydrate action:
+const onClick= () => hydrate({
+        hydration: {'Book': {}}
+    })
+```
+
+Model order does not matter. You can add references (rel id's) to objects that don't exist yet.
 
 ## Example Data:
 
