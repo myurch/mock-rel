@@ -1,4 +1,4 @@
-import {handle_add_all_models, handle_add_model, handle_backref, checkSchemaIntegrity, checkValidation} from '../utils'
+import {handle_add_all_models, handle_add_model, handle_backref, checkSchemaIntegrity, checkValidation, checkPreAction} from '../utils'
 import * as R from 'ramda'
 
 const initState = {}
@@ -9,6 +9,11 @@ export const fakeDBReducer = (state = initState, action) => {
         case 'ADD_ALL_MODELS': {
             // schema can be undefined
             const {modelName, data_list, id_automatic, schema} = {...payload}
+
+            const result = checkPreAction(state, action)
+            state = result.state
+            action = result.action
+
             if (!(checkValidation(state, action))) {
                 return state
             }
@@ -26,6 +31,11 @@ export const fakeDBReducer = (state = initState, action) => {
         case 'ADD_MODEL': {
             // schema can be undefined
             const {modelName, data, schema} = {...payload}
+
+            const result = checkPreAction(state, action)
+            state = result.state
+            action = result.action
+
             if (!(checkValidation(state, action))) {
                 return state
             }
@@ -41,6 +51,11 @@ export const fakeDBReducer = (state = initState, action) => {
         case 'EDIT_MODEL': {
             // schema can be undefined
             const {modelName, data, id, schema} = {...payload}
+
+            const result = checkPreAction(state, action)
+            state = result.state
+            action = result.action
+
             if (!(checkValidation(state, action))) {
                 return state
             }
@@ -55,11 +70,21 @@ export const fakeDBReducer = (state = initState, action) => {
         }
         case 'DELETE_MODEL': {
             const {modelName, id} = {...payload}
+
+            const result = checkPreAction(state, action)
+            state = result.state
+            action = result.action
+
             if (!(checkValidation(state, action))) {
                 return state
             }
             return R.dissocPath([modelName, id], state)
         }
+        case 'HYDRATE':
+            if(action && action.hydration) {
+                return action.hydration
+            }
+            return state
         default:
             return state
     }

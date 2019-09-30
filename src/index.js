@@ -1,7 +1,7 @@
 import {DataBase} from './database'
 import {createField} from './utils'
-import {BASIC, OBJECT, BACKREF} from './utils'
+import {OBJECT, BACKREF} from './consts'
 
 export {DataBase}
 export {createField}
-export {BASIC, OBJECT, BACKREF}
+export {OBJECT, BACKREF}

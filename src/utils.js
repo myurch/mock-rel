@@ -1,10 +1,8 @@
 import * as R from 'ramda'
 
-export const BASIC = 'BASIC'
-export const OBJECT = 'OBJECT'
-export const BACKREF = 'BACKREF'
+import {BACKREF} from './consts'
 
-export const createField = ({type= BASIC, modelName=null, backref=null}) => {
+export const createField = ({type, modelName=null, backref=null}) => {
     return({
         type: type,
         backref: backref,
@@ -122,6 +120,16 @@ export const checkValidation = (state, action) => {
         return validation({state, action})
     }
     return true
+}
+
+// return boolean true if passes
+export const checkPreAction = (state, action) => {
+    const modelName = R.path(['payload', 'modelName'], action)
+    const preAction = R.path(['payload', 'schema', modelName, 'preAction'], action)
+    if (preAction) {
+        return preAction({state, action})
+    }
+    return { state, action }
 }
 
 
