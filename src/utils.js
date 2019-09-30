@@ -46,10 +46,10 @@ let objMax = (obj) => {
     return 0;
 }
 
-const resolveNextid = ({state, modelName, data, nextId, schema}) => {
+const resolveNextid = ({state, modelName, data, schema}) => {
     const customResolver = R.path([modelName, 'id_resolver'], schema)
     if (customResolver) {
-        return customResolver({state, modelName, data, nextId})
+        return customResolver({state, modelName, data})
     } else {
         // look at all id's already stored in the state; return max + 1
         const ids = R.pluck(['id'], R.propOr({}, modelName, state))
@@ -92,7 +92,7 @@ export const handle_add_model = ({state, modelName, data, nextId, schema}) => {
         throw TypeError('add_all_models() must take String for modelName')
     }
     if (!nextId){
-        nextId = resolveNextid({state, modelName, data, nextId, schema})
+        nextId = resolveNextid({state, modelName, data, schema})
     }
     // add associated data
 
@@ -105,8 +105,7 @@ export const checkSchemaIntegrity = (schema) => {
     if (schema) {
         R.mapObjIndexed((num, key, obj) => {
             if (!(R.prop(['fields'], num))) {
-                throw TypeError('src schema integrity error. Check that all required schema ' +
-                        'fields present for all models ("fields").')
+                throw TypeError('mock-rel schema integrity error. Every model should have "fields" key')
             }
         }, schema)
     }

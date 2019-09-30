@@ -187,6 +187,65 @@ const allBookData = Manager.resolveAllModels(state, 'Book')
 const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
 ```
 
+## Payload Reformat (Redux Setup)
+
+Format your action's payload where its convenient. You can add helper functions to your schema to do so:
+
+```javascript
+const preActionFunc = ({state, action}) => {
+    // do stuff with action.payload
+    // return modified action
+    return { state, action }
+}
+// add to schema:
+const schema = {
+    'Book': {
+        'preAction': preActionFunc,
+    }
+}
+```
+
+This will give you a chance to reformat the data to fit mock-rel's requirements. Your preAction function will run first, before any other helper function (such as validation).
+
+
+## Validation (Redux Setup)
+
+Runs before every action (for a given model). Will exit action (will not add/delete/edit) if fails test.
+
+```javascript
+const bookValidation = ({state, action}) => {
+    // return boolean true if passes, false otherwise
+    return true
+}
+const schema = {
+    'Book': {
+        validation: bookValidation,
+    }
+}
+```
+
+Validation runs after any preAction functions
+
+
+## Next Id Resolver (Redux Setup)
+
+By default, when you create a model, the new id is the largest id in the state (for that model), incremented by 1. To override how id's are resolved:
+
+```javascript
+const bookIdResolver = ({state, modelName, data}) => {
+    // custom logic
+    // 'state' contains all the currently existing id's
+    // return next id
+    return 5
+}
+const schema = {
+    'Book': {
+        'id_resolver': bookIdResolver
+    }
+}
+```
+
+
 ## Example Data:
 
 Important: when adding a relationship field USING AN ACTION (for example: { author: 3 }), that relationship model (author w/ id of 3) MUST already exist in the database.
