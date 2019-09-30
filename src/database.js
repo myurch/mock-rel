@@ -2,7 +2,7 @@ import * as reducers from "./mockRedux/reducers"
 import * as Actions from "./mockRedux/actions"
 import * as R from "ramda"
 import {handle_add_all_models, handle_backref, checkSchemaIntegrity} from "./utils"
-
+import {OBJECT, BACKREF} from './consts'
 const _selDB = state => R.propOr({}, 'fakeDBReducer', state)
 const _selMod = (state, modelName, id) => R.pathOr({}, ['fakeDBReducer', modelName, id], state)
 const _selAllMod = (state, modelName) => R.pathOr({}, ['fakeDBReducer', modelName], state)
@@ -94,7 +94,7 @@ export class DataBase {
             (field)=>{
                 const fieldData = fields[field]
 
-                if (R.prop('type', fieldData) === 'OBJECT') {
+                if (R.prop('type', fieldData) === OBJECT) {
                     if (lvl > 0) {
                         const newId = R.prop(field, modelData)
                         results[field] = self.get_instance({
@@ -104,7 +104,7 @@ export class DataBase {
                             lvl: (lvl - 1)
                         })
                     }
-                } else if (R.prop('type', fieldData) === 'BACKREF') {
+                } else if (R.prop('type', fieldData) === BACKREF) {
                     if (lvl > 0) {
                         const backref = fieldData.backref
                         results[field] = self.find_instance({

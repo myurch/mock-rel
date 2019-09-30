@@ -93,6 +93,8 @@ const reduxDispatchFunctions = (dispatch) => ({
     addAllModels: bindActionCreators(Manager.actions.addAllModels, dispatch),
     editModel: bindActionCreators(Manager.actions.editModel, dispatch),
     deleteModel: bindActionCreators(Manager.actions.deleteModel, dispatch),
+    // see 'Initial State' section below
+    hydrate: bindActionCreators(Manager.actions.hydrate, dispatch)
 })
 
 // ready to use in your component's submit button
@@ -100,6 +102,16 @@ const onSubmit = () => {
     return addModel({ modelName: 'Book', data: { name: 'boo', author: 2 }, schema })
 }
 ```
+
+### Actions added
+
+mock-rel will add actions with the following types to your redux store:
+
+* "ADD_ALL_MODELS"
+* "ADD_MODEL"
+* "EDIT_MODEL"
+* "DELETE_MODEL"
+* "HYDRATE"
 
 ## Payloads for Actions (Redux Setup)
 
@@ -186,6 +198,95 @@ const allBookData = Manager.resolveAllModels(state, 'Book')
 // get one Book with id = 3
 const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
 ```
+
+## Payload Reformat (Redux Setup)
+
+Sometimes, its inconvenient to change your action payload in the component itself: 
+
+```javascript
+// data not in correct format?
+// good news! you don't need to format your payload here!
+onSubmit = () => addModel(props)
+```
+
+Format your action's payload where its convenient. You can add helper functions to your schema to do so:
+
+```javascript
+const preActionFunc = ({state, action}) => {
+    // do stuff with action.payload
+    // return modified action
+    return { state, action }
+}
+// add to schema:
+const schema = {
+    'Book': {
+        'preAction': preActionFunc,
+    }
+}
+```
+
+This will give you a chance to reformat the data to fit mock-rel's requirements. Your preAction function will run first, before any other helper function (such as validation).
+
+
+## Validation (Redux Setup)
+
+Runs before every action (for a given model). Will exit action (will not add/delete/edit) if fails test.
+
+```javascript
+const bookValidation = ({state, action}) => {
+    // return boolean true if passes, false otherwise
+    return true
+}
+const schema = {
+    'Book': {
+        validation: bookValidation,
+    }
+}
+```
+
+Validation runs after any preAction functions
+
+
+## Next Id Resolver (Redux Setup)
+
+By default, when you create a model, the new id is the largest id in the state (for that model), incremented by 1. To override how id's are resolved:
+
+```javascript
+const bookIdResolver = ({state, modelName, data}) => {
+    // custom logic
+    // 'state' contains all the currently existing id's
+    // return next id
+    return 5
+}
+const schema = {
+    'Book': {
+        'id_resolver': bookIdResolver
+    }
+}
+```
+
+## Initial State (Redux Setup)
+
+If you want to add initial data to your fake database when the app starts, use the Manager's hydration action:
+
+```javascript
+// dispatch an action when the app initializes to add books to fake redux store
+// add id's to both the row entry and table keys
+store.dispatch({ type: 'HYDRATE', payload: { hydration:
+    {'Book': {
+        3: {name: 'book_3..', author : 0, id: 3},
+        4: {name: 'book_4', author : 0, id: 4}
+    },'Author': {
+        0: {name: 'author_0', id: 0}
+    }}
+}})
+// or use the hydrate action:
+const onClick= () => hydrate({
+        hydration: {'Book': {}}
+    })
+```
+
+Model order does not matter. You can add references (rel id's) to objects that don't exist yet.
 
 ## Example Data:
 
