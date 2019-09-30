@@ -140,6 +140,10 @@ Note, the actions must have a specific payload:
    
    the added id's (under 'author' and 'books') must correspond to existing objects in the fake database
    
+#### Notes for 'schema' prop:
+
+Needed for relationship field backref's, and helper functions (such as 'validation' and 'preAction').
+   
 
 ### addAllModels()
 
@@ -180,6 +184,7 @@ only contains fields being edited. for example, to edit a book field of the auth
 | ------------- | ------------- | ------------- |
 | modelName     | see above     | see above     |
 | id            | see above     | see above     |
+| schema        | see above     | see above     |
 
 
 ## Resolving Models from the Database (Redux Setup)
