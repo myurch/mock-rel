@@ -1,0 +1,9 @@
+Version 0.2.2
+--------------
+
+- Fix editModel() bug
+- Fix handler function bug (preAction, validate)
+- Get rid of unnecessary dependencies
+- README clarify
+- rename get_instance & add_all_models to getRow and addTable
+- refactor props to resolveModel & resolveAllModels

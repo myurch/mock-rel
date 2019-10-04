@@ -4,12 +4,9 @@ import * as R from 'ramda'
 const initState = {}
 
 export const fakeDBReducer = (state = initState, action) => {
-    const payload = action.payload
     switch (action.type) {
         case 'ADD_ALL_MODELS': {
             // schema can be undefined
-            const {modelName, data_list, id_automatic, schema} = {...payload}
-
             const result = checkPreAction(state, action)
             state = result.state
             action = result.action
@@ -17,6 +14,7 @@ export const fakeDBReducer = (state = initState, action) => {
             if (!(checkValidation(state, action))) {
                 return state
             }
+            const {modelName, data_list, id_automatic, schema} = {...action.payload}
             checkSchemaIntegrity(schema)
 
             let table = handle_add_all_models({modelName, data_list, id_automatic, state})
@@ -30,8 +28,6 @@ export const fakeDBReducer = (state = initState, action) => {
         }
         case 'ADD_MODEL': {
             // schema can be undefined
-            const {modelName, data, schema} = {...payload}
-
             const result = checkPreAction(state, action)
             state = result.state
             action = result.action
@@ -39,6 +35,7 @@ export const fakeDBReducer = (state = initState, action) => {
             if (!(checkValidation(state, action))) {
                 return state
             }
+            const {modelName, data, schema} = {...action.payload}
             checkSchemaIntegrity(schema)
 
             const props = handle_add_model({state, modelName, data, schema})
@@ -50,8 +47,6 @@ export const fakeDBReducer = (state = initState, action) => {
         }
         case 'EDIT_MODEL': {
             // schema can be undefined
-            const {modelName, data, id, schema} = {...payload}
-
             const result = checkPreAction(state, action)
             state = result.state
             action = result.action
@@ -59,6 +54,7 @@ export const fakeDBReducer = (state = initState, action) => {
             if (!(checkValidation(state, action))) {
                 return state
             }
+            const {modelName, data, id, schema} = {...action.payload}
             checkSchemaIntegrity(schema)
 
             const props = handle_add_model({state, modelName, data, nextId: id, schema})
@@ -69,8 +65,6 @@ export const fakeDBReducer = (state = initState, action) => {
             return handle_backref({schema, modelName, state, data, nextId})
         }
         case 'DELETE_MODEL': {
-            const {modelName, id} = {...payload}
-
             const result = checkPreAction(state, action)
             state = result.state
             action = result.action
@@ -78,10 +72,11 @@ export const fakeDBReducer = (state = initState, action) => {
             if (!(checkValidation(state, action))) {
                 return state
             }
+            const {modelName, id} = {...action.payload}
             return R.dissocPath([modelName, id], state)
         }
         case 'HYDRATE':
-            return R.propOr(state, 'hydration', payload)
+            return R.propOr(state, 'hydration', action.payload)
         default:
             return state
     }
