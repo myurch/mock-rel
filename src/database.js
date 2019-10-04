@@ -30,15 +30,15 @@ export class DataBase {
 
         // resolve database into objects
         this.resolveModel = this._relMod
-        this.resolveAllModels = (state, modelName) => {
+        this.resolveAllModels = ({state, modelName}) => {
             // returns list of strings (Object.keys) even tho integers
             let allIds = Object.keys(R.propOr({}, modelName, _selDB(state)))
             allIds = R.map(v => Number(v), allIds)
-            return R.map(id => this._relMod(state, modelName, id), allIds)
+            return R.map(id => this._relMod({state, modelName, id}), allIds)
         }
     }
 
-    _relMod(state, modelName, id) {
+    _relMod({state, modelName, id}) {
         return this.getRow({modelName, id, fakeDB: _selDB(state)})
     }
 

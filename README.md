@@ -203,9 +203,9 @@ This will return an object with nested relationship fields, ready to use for you
 // wherever you have access to your redux state, you have access to your fake database:
 
 // get all instances of the Book model
-const allBookData = Manager.resolveAllModels(state, 'Book')
+const allBookData = Manager.resolveAllModels({state, modelName: 'Book'})
 // get one Book with id = 3
-const bookNumberThree = Manager.resolveModel(state, 'Book', 3)
+const bookNumberThree = Manager.resolveModel({state, modelName: 'Book', id: 3})
 ```
 
 ## Payload Reformat (Redux Setup)
