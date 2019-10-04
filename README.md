@@ -370,18 +370,18 @@ export const author_attr = [
 // create manager obj & schema the same way as before
 // Custom resolvers still apply
 const Manager = new DataBase({ schema })
-// use the add_all_models() function to add data to your Manager object directly:
-Manager.add_all_models({modelName: 'Book', data_list: book_attr, id_automatic: false})
+// use the addTable() function to add data to your Manager object directly:
+Manager.addTable({modelName: 'Book', data_list: book_attr, id_automatic: false})
 // note: 'books' field in 'author_attr' can only be filled out after all 'book_attr' have already been added
-Manager.add_all_models({modelName: 'Author', data_list: author_attr})
+Manager.addTable({modelName: 'Author', data_list: author_attr})
 ```
 
 
 Your data is now stored in the 'Manager' object itself, instead of a redux state. To resolve it:
 
 ```javascript
-const author_1 = Manager.get_instance({modelName: 'Author', id: 0})
-const author_2 = Manager.get_instance({modelName: 'Author', id: 1})
+const author1 = Manager.getRow({modelName: 'Author', id: 0})
+const author2 = Manager.getRow({modelName: 'Author', id: 1})
 ```
 
 
