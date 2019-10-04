@@ -91,12 +91,18 @@ export const handle_add_model = ({state, modelName, data, nextId, schema}) => {
     if (!(typeof(modelName) === 'string')){
         throw TypeError('add_all_models() must take String for modelName')
     }
-    if (!nextId){
+    if (nextId === undefined){
         nextId = resolveNextid({state, modelName, data, schema})
     }
     // add associated data
-
-    const row = R.assocPath(['id'], nextId, data)
+    const existingRow = R.path([modelName, nextId.toString()], state)
+    let row = R.assocPath(['id'], nextId, data)
+    if (existingRow) {
+        row = R.mergeDeepLeft(
+            row,
+            existingRow
+        )
+    }
     state = R.assocPath([modelName, nextId.toString()], row, state)
     return {state, nextId}
 }
