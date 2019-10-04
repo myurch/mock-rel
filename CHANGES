@@ -1,0 +1,7 @@
+Version 0.2.2
+--------------
+
+- Fix editModel() bug
+- Fix handler function bug (preAction, validate)
+- Get rid of unnecessary dependencies
+- README clarify

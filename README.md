@@ -38,22 +38,24 @@ export const schema = {
         'fields': {
             id: {},
             name: {},
-            books: createField({type:BACKREF, modelName:'Book', backref:'author'}), // list of books
+            // list of books
+            books: createField({type:BACKREF, modelName:'Book', backref:'author'}),
         },
     },
     'Book': {
         'fields': {
             id : {},
             name : {},
-            author : createField({type:OBJECT, modelName:'Author'}) // one author per book
+            // one author per book
+            author : createField({type:OBJECT, modelName:'Author'})
         }
     }
 }
 ```
 
-The 'BACKREF' type lets the database know that this is a list of references from another model.
+The 'BACKREF' type lets the database know that this should be resolved as a list of references from another model.
 
-The 'OBJECT' type lets the database know that this is only one reference to another model.
+The 'OBJECT' type lets the database know that this should be resolved as only one reference to another model.
 
 All other fields must be listed in the schema (including id). But their field types (string, int, ect) are not explicitly defined.
 
@@ -105,7 +107,7 @@ const onSubmit = () => {
 
 ### Actions added
 
-mock-rel will add actions with the following types to your redux store:
+mock-rel will add actions with the following types to your redux:
 
 * "ADD_ALL_MODELS"
 * "ADD_MODEL"
@@ -116,6 +118,8 @@ mock-rel will add actions with the following types to your redux store:
 ## Payloads for Actions (Redux Setup)
 
 Note, the actions must have a specific payload:
+
+If you want to reformat your payload in one place before it hits the reducers, see the 'Payload Reformat' section below.
 
 
 ### addModel() 
@@ -128,7 +132,7 @@ Note, the actions must have a specific payload:
 
 #### Notes for the 'data' prop:
    
-   fieldName cannot be 'id', because that is automatically taken care of when creating object (id_automatic only works for adding groups of data)
+   fieldName cannot be 'id', because that is automatically taken care of when creating object ( id_automatic only works for adding groups of data in addAllModels() )
    
    'OBJECT' field (author id added to Book model):
    
@@ -157,7 +161,7 @@ Needed for relationship field backref's, and helper functions (such as 'validati
 
 #### Notes for the 'id_automatic' prop:
 
- if true, mock-rel will handle adding id's to the data and ignore your id data. otherwise you must add your own id.
+ if true (default), mock-rel will handle the id's in the db (and ignore any id data you provide). otherwise you must add your own id to the data object.
  
  id's start at integer 0
 
@@ -378,4 +382,30 @@ Your data is now stored in the 'Manager' object itself, instead of a redux state
 ```javascript
 const author_1 = Manager.get_instance({modelName: 'Author', id: 0})
 const author_2 = Manager.get_instance({modelName: 'Author', id: 1})
+```
+
+
+## Redux- Thunk Tips
+
+You may need to access other parts of the your redux store when saving/editing data.
+
+Because your fake-database and form data are both in your redux store, you'll need access to the entire state during your onSubmit().
+
+Example of how to use redux-thunk here:
+
+```javascript
+// wherever you have access to dispatch
+const foo = (evt) => {
+    return (dispatch, getState) => {
+        // the whole state is here:
+        const state = getState()
+        // get data from other part of redux store
+        const thing = state.thing_i_need
+        dispatch(Manager.actions.addModel({ data: { thing }, ...evt }))
+    }
+}
+
+const reduxDispatchFunctions = (dispatch) => ({
+    addModel: bindActionCreators(foo, dispatch)
+})
 ```

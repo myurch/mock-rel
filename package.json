@@ -1,7 +1,7 @@
 {
   "name": "mock-rel",
-  "version": "0.2.1",
-  "description": "Create/update nested relational objects in a temp frontend database using redux",
+  "version": "0.2.2",
+  "description": "Fake Database in redux store; exposes actions to create/edit/delete/resolve rows and tables",
   "main": "lib/index.js",
   "scripts": {
     "lib": "./node_modules/.bin/babel src --out-dir lib"
@@ -19,13 +19,12 @@
   "keywords": [
     "redux",
     "database",
-    "crud"
-    ],
+    "db",
+    "crud",
+    "mock"
+  ],
   "dependencies": {
-    "ramda": "^0.26.1",
-    "rc-switch": "^1.9.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "ramda": "^0.26.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
